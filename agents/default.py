@@ -66,7 +66,7 @@ class NormalNN(nn.Module):
         # For a single-headed model the output will be {'All':output}
         model.last = nn.ModuleDict()
         for task,out_dim in cfg['out_dim'].items():
-            model.last[task] = nn.Linear(n_feat,out_dim)
+            model.last[task] = nn.Linear(n_feat,out_dim) # output head
 
         # Redefine the task-dependent function
         def new_logits(self, x):

@@ -2,7 +2,13 @@ GPUID=1
 OUTDIR=outputs/split_CIFAR100_incremental_domain
 REPEAT=5
 mkdir -p $OUTDIR
-python3 -u iBatchLearn.py --dataset CIFAR100 --train_aug --gpuid $GPUID --repeat $REPEAT --optimizer Adam    --force_out_dim 20 --first_split_size 20 --other_split_size 20 --schedule 80 120 160 --batch_size 128 --model_name WideResNet_28_2_cifar --model_type resnet --agent_type customization  --agent_name EWC        --lr 0.001 --reg_coef 10       | tee ${OUTDIR}/EWC.log
+python3 -u iBatchLearn.py --dataset CIFAR100 --train_aug \
+--gpuid $GPUID --repeat $REPEAT --optimizer Adam    \
+--force_out_dim 20 --first_split_size 20 --other_split_size 20 \
+--schedule 80 120 160 --batch_size 128 \
+--model_name ResNet18 --model_type resnet \
+--agent_type customization  --agent_name EWC        \
+--lr 0.001 --reg_coef 10       | tee ${OUTDIR}/EWC.log
 # python -u iBatchLearn.py --dataset CIFAR100 --train_aug --gpuid $GPUID --repeat $REPEAT --optimizer SGD     --force_out_dim 20 --first_split_size 20 --other_split_size 20 --schedule 80 120 160 --batch_size 128 --model_name WideResNet_28_2_cifar --model_type resnet     --momentum 0.9 --weight_decay 1e-4       --lr 0.1   --offline_training         | tee ${OUTDIR}/Offline_SGD.log
 # python -u iBatchLearn.py --dataset CIFAR100 --train_aug --gpuid $GPUID --repeat $REPEAT --optimizer Adam    --force_out_dim 20 --first_split_size 20 --other_split_size 20 --schedule 80 120 160 --batch_size 128 --model_name WideResNet_28_2_cifar --model_type resnet                                              --lr 0.001 --offline_training         | tee ${OUTDIR}/Offline_adam.log
 # python -u iBatchLearn.py --dataset CIFAR100 --train_aug --gpuid $GPUID --repeat $REPEAT --optimizer Adam    --force_out_dim 20 --first_split_size 20 --other_split_size 20 --schedule 80 120 160 --batch_size 128 --model_name WideResNet_28_2_cifar --model_type resnet                                              --lr 0.001                            | tee ${OUTDIR}/Adam.log

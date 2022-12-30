@@ -191,7 +191,7 @@ def WideResNet_28_10_cifar(out_dim=10):
 def ResNet10(out_dim=10):
     return PreActResNet(PreActBlock, [1,1,1,1], num_classes=out_dim)
 
-def ResNet18S(out_dim=10):
+def ResNet18S(out_dim=10): # S means the input channel is one
     return PreActResNet(PreActBlock, [2,2,2,2], num_classes=out_dim, in_channels=1)
 
 def ResNet18(out_dim=10):
