@@ -8,7 +8,7 @@ from collections import OrderedDict
 import dataloaders.base
 from dataloaders.datasetGen import SplitGen, PermutedGen
 import agents
-
+import wandb
 
 def run(args):
     if not os.path.exists('outputs'):
@@ -135,7 +135,11 @@ def get_args(argv):
     return args
 
 if __name__ == '__main__':
+    wandb.login(key='808d6ef02f3a9c448c5641c132830eb0c3c83c2a')
+    wandb.init(entity="nbl97_team", project="language")
+    
     args = get_args(sys.argv[1:])
+    wandb.config.update(args) # adds all of the arguments as config variables
     reg_coef_list = args.reg_coef
     avg_final_acc = {}
 
@@ -169,5 +173,11 @@ if __name__ == '__main__':
             print('The regularization coefficient:', args.reg_coef)
             print('The last avg acc of all repeats:', avg_final_acc[reg_coef])
             print('mean:', avg_final_acc[reg_coef].mean(), 'std:', avg_final_acc[reg_coef].std())
+            
+            wandb.log({
+                "last avg acc":avg_final_acc[reg_coef],
+                "mean_avg_final_acc":avg_final_acc[reg_coef].mean(),
+            })
+
     for reg_coef,v in avg_final_acc.items():
         print('reg_coef:', reg_coef,'mean:', avg_final_acc[reg_coef].mean(), 'std:', avg_final_acc[reg_coef].std())
