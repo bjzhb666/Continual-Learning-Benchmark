@@ -6,26 +6,28 @@ import numpy as np
 from random import shuffle
 from collections import OrderedDict
 import dataloaders.base
-from dataloaders.datasetGen import SplitGen, PermutedGen
+from dataloaders.datasetGen import SplitGen, PermutedGen, CORe50Gen
 import agents
 import wandb
 
 def run(args):
     if not os.path.exists('outputs'):
         os.mkdir('outputs')
-
     # Prepare dataloaders
-    train_dataset, val_dataset = dataloaders.base.__dict__[args.dataset](args.dataroot, args.train_aug)
-    if args.n_permutation>0:
-        train_dataset_splits, val_dataset_splits, task_output_space = PermutedGen(train_dataset, val_dataset,
-                                                                             args.n_permutation,
-                                                                             remap_class=not args.no_class_remap)
+    if args.dataset=='CORe50':
+        train_dataset_splits,val_dataset_splits,train_task_output_space,val_task_output_space = CORe50Gen()
     else:
-        train_dataset_splits, val_dataset_splits, task_output_space = SplitGen(train_dataset, val_dataset,
-                                                                          first_split_sz=args.first_split_size,
-                                                                          other_split_sz=args.other_split_size,
-                                                                          rand_split=args.rand_split,
-                                                                          remap_class=not args.no_class_remap)
+        train_dataset, val_dataset = dataloaders.base.__dict__[args.dataset](args.dataroot, args.train_aug)
+        if args.n_permutation>0:
+            train_dataset_splits, val_dataset_splits, task_output_space = PermutedGen(train_dataset, val_dataset,
+                                                                                args.n_permutation,
+                                                                                remap_class=not args.no_class_remap)
+        else:
+            train_dataset_splits, val_dataset_splits, task_output_space = SplitGen(train_dataset, val_dataset,
+                                                                            first_split_sz=args.first_split_size,
+                                                                            other_split_sz=args.other_split_size,
+                                                                            rand_split=args.rand_split,
+                                                                            remap_class=not args.no_class_remap)
     # After dataset Gen, we only use train_dataset_splits, val_dataset_splits, task_output_space
     # Prepare the Agent (model)
     agent_config = {'lr': args.lr, 'momentum': args.momentum, 'weight_decay': args.weight_decay,'schedule': args.schedule,
@@ -39,9 +41,13 @@ def run(args):
     print('#parameter of model:',agent.count_parameter())
 
     # Decide split ordering
-    task_names = sorted(list(task_output_space.keys()), key=int)
-    print('Task order:',task_names)
+    train_task_names = sorted(list(train_task_output_space.keys()), key=int)
+    val_task_names = sorted(list(val_task_output_space.keys()),key=int)
+    print('Train Task order:',train_task_names)
+    print('Val task order', val_task_names)
+    
     if args.rand_split_order:
+        raise NotImplementedError
         shuffle(task_names)
         print('Shuffled task order:', task_names)
 
@@ -62,27 +68,30 @@ def run(args):
 
     else:  # Incremental learning
         # Feed data to agent and evaluate agent's performance
-        for i in range(len(task_names)):
-            train_name = task_names[i]
+        for i in range(len(train_task_names)):
+            train_name = train_task_names[i]
+            val_name = ['All'] # test all every training task
+            val_dataset_all = torch.utils.data.ConcatDataset(val_dataset_splits.values())
             print('======================',train_name,'=======================')
             train_loader = torch.utils.data.DataLoader(train_dataset_splits[train_name],
                                                         batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
-            val_loader = torch.utils.data.DataLoader(val_dataset_splits[train_name],
-                                                      batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
+            val_loader = torch.utils.data.DataLoader(val_dataset_all,
+                                                 batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
             if args.incremental_class:
-                agent.add_valid_output_dim(task_output_space[train_name])
+                agent.add_valid_output_dim(train_task_output_space[train_name])
 
             # Learn
-            agent.learn_batch(train_loader, val_loader)
+            agent.learn_batch(train_loader) # don't need val on current task
 
             # Evaluate
             acc_table[train_name] = OrderedDict()
             for j in range(i+1):
-                val_name = task_names[j]
+                val_name = ['All']
                 print('validation split name:', val_name)
-                val_data = val_dataset_splits[val_name] if not args.eval_on_train_set else train_dataset_splits[val_name]
-                val_loader = torch.utils.data.DataLoader(val_data,
+                val_dataset_all = torch.utils.data.ConcatDataset(val_dataset_splits.values())
+                # val_data = val_dataset_splits[val_name] if not args.eval_on_train_set else train_dataset_splits[val_name]
+                val_loader = torch.utils.data.DataLoader(val_dataset_all,
                                                          batch_size=args.batch_size, shuffle=False,
                                                          num_workers=args.workers)
                 acc_table[val_name][train_name] = agent.validation(val_loader)
@@ -101,7 +110,7 @@ def get_args(argv):
     parser.add_argument('--agent_name', type=str, default='NormalNN', help="The class name of agent")
     parser.add_argument('--optimizer', type=str, default='SGD', help="SGD|Adam|RMSprop|amsgrad|Adadelta|Adagrad|Adamax ...")
     parser.add_argument('--dataroot', type=str, default='data', help="The root folder of dataset or downloaded data")
-    parser.add_argument('--dataset', type=str, default='MNIST', help="MNIST(default)|CIFAR10|CIFAR100")
+    parser.add_argument('--dataset', type=str, default='MNIST', help="MNIST(default)|CIFAR10|CIFAR100|CORe50")
     parser.add_argument('--n_permutation', type=int, default=0, help="Enable permuted tests when >0")
     parser.add_argument('--first_split_size', type=int, default=2)
     parser.add_argument('--other_split_size', type=int, default=2)
