@@ -2,7 +2,7 @@ GPUID=1
 OUTDIR=outputs/split_CIFAR100_incremental_domain
 REPEAT=5
 mkdir -p $OUTDIR
-python3 -u iBatchLearn.py --dataset CIFAR100 --train_aug \
+python -u iBatchLearn.py --dataset CIFAR100 --train_aug \
 --gpuid $GPUID --repeat $REPEAT --optimizer Adam    \
 --force_out_dim 20 --first_split_size 20 --other_split_size 20 \
 --schedule 80 120 160 --batch_size 128 \

@@ -174,7 +174,7 @@ class NormalNN(nn.Module):
             data_timer.tic()
             batch_timer.tic()
             self.log('Itr\t\tTime\t\t  Data\t\t  Loss\t\tAcc')
-            for i, (input, target, task) in enumerate(train_loader):
+            for i, (input, target, task) in enumerate(train_loader): # here we should use this format to modify the dataloader
 
                 data_time.update(data_timer.toc())  # measure data loading time
 

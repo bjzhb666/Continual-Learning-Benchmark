@@ -1,6 +1,8 @@
 import torch
 from random import shuffle
 from .wrapper import Subclass, AppendName, Permutation
+from torchvision import transforms
+from torchvision.datasets import ImageFolder
 
 
 def SplitGen(train_dataset, val_dataset, first_split_sz=2, other_split_sz=2, rand_split=False, remap_class=False):
@@ -68,3 +70,53 @@ def PermutedGen(train_dataset, val_dataset, n_permute, remap_class=False):
         task_output_space[name] = train_dataset.number_classes
 
     return train_datasets, val_datasets, task_output_space
+
+def CORe50Gen():
+    _mu = [0.485, 0.456, 0.406]  # imagenet normalization
+    _std = [0.229, 0.224, 0.225]
+    train_transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=_mu, std=_std)
+    ])
+    val_transform = train_transform
+    
+    train_datasets = {}
+    val_datasets = {}
+    train_task_output_space = {}
+    val_task_output_space = {}
+
+    train_data1 = ImageFolder(root='/data1/zhaohongbo/core50_128x128/s1/',transform=train_transform)
+    train_data2 = ImageFolder(root='/data1/zhaohongbo/core50_128x128/s2/',transform=train_transform)
+    train_data3 = ImageFolder(root='/data1/zhaohongbo/core50_128x128/s3/',transform=train_transform)
+    train_data4 = ImageFolder(root='/data1/zhaohongbo/core50_128x128/s4/',transform=train_transform)
+    train_data5 = ImageFolder(root='/data1/zhaohongbo/core50_128x128/s5/',transform=train_transform)
+    train_data6 = ImageFolder(root='/data1/zhaohongbo/core50_128x128/s6/',transform=train_transform)
+    train_data7 = ImageFolder(root='/data1/zhaohongbo/core50_128x128/s7/',transform=train_transform)
+    train_data8 = ImageFolder(root='/data1/zhaohongbo/core50_128x128/s8/',transform=train_transform)
+
+    train_datasets['1']=AppendName(train_data1,str(1))
+    train_datasets['2']=AppendName(train_data2,str(2))
+    train_datasets['3']=AppendName(train_data3,str(3))
+    train_datasets['4']=AppendName(train_data4,str(4))   
+    train_datasets['5']=AppendName(train_data5,str(5))
+    train_datasets['6']=AppendName(train_data6,str(6))
+    train_datasets['7']=AppendName(train_data7,str(7))
+    train_datasets['8']=AppendName(train_data8,str(8))
+
+    # val dataset
+    val_data1 =  ImageFolder(root='/data1/zhaohongbo/core50_128x128/s9/',transform=val_transform)  
+    val_data2 =  ImageFolder(root='/data1/zhaohongbo/core50_128x128/s10/',transform=val_transform)  
+    val_data3 =  ImageFolder(root='/data1/zhaohongbo/core50_128x128/s11/',transform=val_transform)  
+
+    val_datasets['1'] = AppendName(val_data1,str(1))
+    val_datasets['2'] = AppendName(val_data2,str(2))
+    val_datasets['3'] = AppendName(val_data3,str(3))
+
+    for i in range(1,9):
+        train_task_output_space[str(i)]=50
+    
+    for i in range(1,4):
+        val_task_output_space[(str(i))]=50
+
+    return train_datasets, val_datasets, train_task_output_space,val_task_output_space
