@@ -94,7 +94,8 @@ def run(args):
                 val_loader = torch.utils.data.DataLoader(val_dataset_all,
                                                          batch_size=args.batch_size, shuffle=False,
                                                          num_workers=args.workers)
-                acc_table[val_name][train_name] = agent.validation(val_loader)
+                acc_table['All'] = {}
+                acc_table['All'][train_name] = agent.validation(val_loader)
 
     return acc_table, task_names
 

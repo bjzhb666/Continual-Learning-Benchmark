@@ -4,6 +4,7 @@ import torch.nn as nn
 from types import MethodType
 import models
 from utils.metric import accuracy, AverageMeter, Timer
+import wandb
 
 class NormalNN(nn.Module):
     '''
@@ -120,6 +121,7 @@ class NormalNN(nn.Module):
 
         self.log(' * Val Acc {acc.avg:.3f}, Total time {time:.2f}'
               .format(acc=acc,time=batch_timer.toc()))
+        wandb.log({"Val Acc":acc.avg})
         return acc.avg
 
     def criterion(self, preds, targets, tasks, **kwargs):
