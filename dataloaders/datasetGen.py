@@ -120,3 +120,36 @@ def CORe50Gen():
         val_task_output_space[(str(i))]=50
 
     return train_datasets, val_datasets, train_task_output_space,val_task_output_space
+
+def datasets4Gen():
+    train_data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/cubs_cropped/train',transform=transforms.ToTensor())
+    train_data2 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/flowers/train',transform=transforms.ToTensor())
+    train_data3 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/sketches/train',transform=transforms.ToTensor())
+    train_data4 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/stanford_cars_cropped/train',transform=transforms.ToTensor())
+    
+    val_data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/cubs_cropped/test',transform=transforms.ToTensor())
+    val_data2 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/flowers/test',transform=transforms.ToTensor())
+    val_data3 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/sketches/test',transform=transforms.ToTensor())
+    val_data4 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/stanford_cars_cropped/test',transform=transforms.ToTensor())
+
+    train_datasets = {}
+    val_datasets = {}
+    train_task_output_space = {}
+    val_task_output_space = {}
+
+    train_datasets['1']=AppendName(train_data1,str(1))
+    train_datasets['2']=AppendName(train_data2,str(2))
+    train_datasets['3']=AppendName(train_data3,str(3))
+    train_datasets['4']=AppendName(train_data4,str(4))          
+
+    val_datasets['1'] = AppendName(val_data1,str(1))
+    val_datasets['2'] = AppendName(val_data2,str(2))
+    val_datasets['3'] = AppendName(val_data3,str(3))
+    val_datasets['4'] = AppendName(val_data4,str(4))
+
+    train_task_output_space['1'] = 200 # cubs
+    train_task_output_space['2'] = 101 # flowers
+    train_task_output_space['3'] = 250 # sketches
+    train_task_output_space['4'] = 196 # cars
+
+    return train_datasets, val_datasets, train_task_output_space

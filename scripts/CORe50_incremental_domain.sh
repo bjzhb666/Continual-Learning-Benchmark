@@ -1,11 +1,11 @@
-GPUID=1
+GPUID=0
 OUTDIR=outputs/CORe50_incremental_domain
 REPEAT=1
 mkdir -p $OUTDIR
 python -u iBatchLearncore.py --gpuid $GPUID --repeat $REPEAT \
 --optimizer Adam  --dataset CORe50  \
 --force_out_dim 50  \
---schedule 1 2 3 --batch_size 64 \
+--schedule 40 60 80 --batch_size 64 \
 --model_name ResNet18 --model_type resnet \
 --agent_type customization  --agent_name EWC        \
 --lr 0.001 --reg_coef 10       | tee ${OUTDIR}/EWC.log
