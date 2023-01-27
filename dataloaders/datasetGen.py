@@ -122,15 +122,30 @@ def CORe50Gen():
     return train_datasets, val_datasets, train_task_output_space,val_task_output_space
 
 def datasets4Gen():
-    train_data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/cubs_cropped/train',transform=transforms.ToTensor())
-    train_data2 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/flowers/train',transform=transforms.ToTensor())
-    train_data3 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/sketches/train',transform=transforms.ToTensor())
-    train_data4 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/stanford_cars_cropped/train',transform=transforms.ToTensor())
+    normalize = transforms.Normalize(
+            mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    train_transform=transforms.Compose([
+                                 transforms.Scale(256),
+                                 transforms.RandomSizedCrop(224),
+                                 transforms.RandomHorizontalFlip(),
+                                 transforms.ToTensor(),
+                                 normalize,
+                             ])
+    val_transform=transforms.Compose([
+                                 transforms.Scale(256),
+                                 transforms.CenterCrop(224),
+                                 transforms.ToTensor(),
+                                 normalize,
+                             ])
+    train_data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/cubs_cropped/train',transform=train_transform)
+    train_data2 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/flowers/train',transform=train_transform)
+    train_data3 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/sketches/train',transform=train_transform)
+    train_data4 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/stanford_cars_cropped/train',transform=train_transform)
     
-    val_data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/cubs_cropped/test',transform=transforms.ToTensor())
-    val_data2 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/flowers/test',transform=transforms.ToTensor())
-    val_data3 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/sketches/test',transform=transforms.ToTensor())
-    val_data4 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/stanford_cars_cropped/test',transform=transforms.ToTensor())
+    val_data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/cubs_cropped/test',transform=val_transform)
+    val_data2 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/flowers/test',transform=val_transform)
+    val_data3 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/sketches/test',transform=val_transform)
+    val_data4 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/stanford_cars_cropped/test',transform=val_transform)
 
     train_datasets = {}
     val_datasets = {}

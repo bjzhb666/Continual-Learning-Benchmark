@@ -6,7 +6,7 @@ import numpy as np
 from random import shuffle
 from collections import OrderedDict
 import dataloaders.base
-from dataloaders.datasetGen import SplitGen, PermutedGen
+from dataloaders.datasetGen import SplitGen, PermutedGen, datasets4Gen
 import agents
 import wandb
 
@@ -15,17 +15,21 @@ def run(args):
         os.mkdir('outputs')
 
     # Prepare dataloaders
-    train_dataset, val_dataset = dataloaders.base.__dict__[args.dataset](args.dataroot, args.train_aug)
-    if args.n_permutation>0:
-        train_dataset_splits, val_dataset_splits, task_output_space = PermutedGen(train_dataset, val_dataset,
-                                                                             args.n_permutation,
-                                                                             remap_class=not args.no_class_remap)
-    else:
-        train_dataset_splits, val_dataset_splits, task_output_space = SplitGen(train_dataset, val_dataset,
-                                                                          first_split_sz=args.first_split_size,
+    if args.dataset!='fourdatasets':
+        train_dataset, val_dataset = dataloaders.base.__dict__[args.dataset](args.dataroot, args.train_aug)
+        if args.n_permutation>0:
+            train_dataset_splits, val_dataset_splits, task_output_space = PermutedGen(train_dataset, val_dataset,
+                                                                                args.n_permutation,
+                                                                                remap_class=not args.no_class_remap)
+        else:
+            train_dataset_splits, val_dataset_splits, task_output_space = SplitGen(train_dataset, val_dataset,
+                                                                            first_split_sz=args.first_split_size,
                                                                           other_split_sz=args.other_split_size,
                                                                           rand_split=args.rand_split,
                                                                           remap_class=not args.no_class_remap)
+    else:
+        train_dataset_splits, val_dataset_splits, task_output_space = datasets4Gen()                                                                                                                                          
+    
     # After dataset Gen, we only use train_dataset_splits, val_dataset_splits, task_output_space
     # Prepare the Agent (model)
     agent_config = {'lr': args.lr, 'momentum': args.momentum, 'weight_decay': args.weight_decay,'schedule': args.schedule,
