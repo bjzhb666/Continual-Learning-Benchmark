@@ -163,7 +163,7 @@ def datasets4Gen():
     val_datasets['4'] = AppendName(val_data4,str(4))
 
     train_task_output_space['1'] = 200 # cubs
-    train_task_output_space['2'] = 101 # flowers
+    train_task_output_space['2'] = 102 # flowers
     train_task_output_space['3'] = 250 # sketches
     train_task_output_space['4'] = 196 # cars
 
