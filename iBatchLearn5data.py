@@ -186,4 +186,4 @@ if __name__ == '__main__':
     for reg_coef,v in avg_final_acc.items():
         print('reg_coef:', reg_coef,'mean:', avg_final_acc[reg_coef].mean(), 'std:', avg_final_acc[reg_coef].std())
 
-    wandb.run.name = args.agent_name +' '+ args.model_name+' '+ args.dataset + str(args.schedule) + args.reg_coef
+    wandb.run.name = args.agent_name +' '+ args.model_name+' '+ args.dataset + str(args.schedule)
