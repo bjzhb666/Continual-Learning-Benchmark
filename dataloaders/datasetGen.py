@@ -3,7 +3,8 @@ from random import shuffle
 from .wrapper import Subclass, AppendName, Permutation
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
-
+from torch.utils.data import random_split
+from torch.utils.data import Dataset
 
 def SplitGen(train_dataset, val_dataset, first_split_sz=2, other_split_sz=2, rand_split=False, remap_class=False):
     '''
@@ -168,3 +169,85 @@ def datasets4Gen():
     train_task_output_space['4'] = 196 # cars
 
     return train_datasets, val_datasets, train_task_output_space
+
+def officehomeGen(fac=0.7,seed=0):
+    train_datasets = {}
+    val_datasets = {}
+    train_task_output_space = {}
+
+    transform = {
+        'train': transforms.Compose(
+            [transforms.Resize([256, 256]),
+                transforms.RandomCrop(224),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                  std=[0.229, 0.224, 0.225])]),
+        'test': transforms.Compose(
+            [transforms.Resize([224, 224]),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                  std=[0.229, 0.224, 0.225])])
+    }
+    
+    data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/office-home dataset/OfficeHomeDataset_10072016/Art')
+    data2 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/office-home dataset/OfficeHomeDataset_10072016/Clipart')
+    data3 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/office-home dataset/OfficeHomeDataset_10072016/Product')
+    data4 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/office-home dataset/OfficeHomeDataset_10072016/Real World')
+
+    train1_size=int(len(data1)*fac)
+    val1_size=len(data1)-train1_size
+    train2_size=int(len(data2)*fac)
+    val2_size=len(data2)-train2_size
+    train3_size=int(len(data3)*fac)
+    val3_size=len(data3)-train3_size
+    train4_size=int(len(data4)*fac)
+    val4_size=len(data4)-train4_size
+
+    train_data1,val_data1 = random_split(dataset=data1,lengths=[train1_size,val1_size], generator=torch.Generator().manual_seed(seed))
+    train_data2,val_data2 =random_split(dataset=data2,lengths=[train2_size,val2_size], generator=torch.Generator().manual_seed(seed))
+    train_data3,val_data3 =random_split(dataset=data3,lengths=[train3_size,val3_size], generator=torch.Generator().manual_seed(seed))
+    train_data4,val_data4 =random_split(dataset=data4,lengths=[train4_size,val4_size], generator=torch.Generator().manual_seed(seed))
+
+    train_data1=MyLazyDataset(train_data1.dataset, transform['train'])
+    train_data2=MyLazyDataset(train_data2.dataset, transform['train'])
+    train_data3=MyLazyDataset(train_data3.dataset, transform['train'])
+    train_data4=MyLazyDataset(train_data4.dataset, transform['train'])
+
+    val_data1=MyLazyDataset(val_data1.dataset,transform['test'])
+    val_data2=MyLazyDataset(val_data1.dataset,transform['test'])
+    val_data3=MyLazyDataset(val_data1.dataset,transform['test'])
+    val_data4=MyLazyDataset(val_data1.dataset,transform['test'])
+
+    train_datasets['1']=AppendName(train_data1,str(1))
+    train_datasets['2']=AppendName(train_data2,str(2))
+    train_datasets['3']=AppendName(train_data3,str(3))
+    train_datasets['4']=AppendName(train_data4,str(4))          
+
+    val_datasets['1'] = AppendName(val_data1,str(1))
+    val_datasets['2'] = AppendName(val_data2,str(2))
+    val_datasets['3'] = AppendName(val_data3,str(3))
+    val_datasets['4'] = AppendName(val_data4,str(4))
+
+    train_task_output_space['1'] = 65
+    train_task_output_space['2'] = 65
+    train_task_output_space['3'] = 65
+    train_task_output_space['4'] = 65
+    
+    return train_datasets, val_datasets, train_task_output_space
+
+class MyLazyDataset(Dataset): # train, test with different transforms
+    def __init__(self, dataset, transform=None):
+        self.dataset = dataset
+        self.transform = transform
+
+    def __getitem__(self, index):
+        if self.transform:
+            x = self.transform(self.dataset[index][0])
+        else:
+            x = self.dataset[index][0]
+        y = self.dataset[index][1]
+        return x, y
+    
+    def __len__(self):
+        return len(self.dataset)
