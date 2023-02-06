@@ -215,9 +215,9 @@ def officehomeGen(fac=0.7,seed=0):
     train_data4=MyLazyDataset(train_data4.dataset, transform['train'])
 
     val_data1=MyLazyDataset(val_data1.dataset,transform['test'])
-    val_data2=MyLazyDataset(val_data1.dataset,transform['test'])
-    val_data3=MyLazyDataset(val_data1.dataset,transform['test'])
-    val_data4=MyLazyDataset(val_data1.dataset,transform['test'])
+    val_data2=MyLazyDataset(val_data2.dataset,transform['test'])
+    val_data3=MyLazyDataset(val_data3.dataset,transform['test'])
+    val_data4=MyLazyDataset(val_data4.dataset,transform['test'])
 
     train_datasets['1']=AppendName(train_data1,str(1))
     train_datasets['2']=AppendName(train_data2,str(2))
