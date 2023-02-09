@@ -2,7 +2,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from torch.nn import init
-
+import torchvision
+import copy
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
@@ -208,3 +209,28 @@ def ResNet101(out_dim=10):
 
 def ResNet152(out_dim=10):
     return PreActResNet(PreActBottleneck, [3,8,36,3], num_classes=out_dim)
+
+def ResNet18torch(out_dim=10):
+    model18 = torchvision.models.resnet18(pretrained=True)
+    numFit = model18.fc.in_features
+    backbone = nn.Sequential(*list(model18.children())[:-1])
+    
+    return PreActResNet18Torch(numFit, out_dim, model18=backbone)
+
+class PreActResNet18Torch(nn.Module):
+    def __init__(self, numFit, num_classes, model18) -> None:
+        super(PreActResNet18Torch,self).__init__()
+        self.backbone = model18
+        self.last = nn.Linear(numFit, num_classes) 
+        self.num_class = num_classes
+
+    def logits(self, x):
+        x = self.last(x)
+        return x   
+     
+    def forward(self, x):
+        out = self.backbone(x)
+        out = out.reshape([out.shape[0],out.shape[1]])
+        # print("out",'*'*20,out.shape)
+        out = self.logits(out)
+        return out

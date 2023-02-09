@@ -87,7 +87,8 @@ class NormalNN(nn.Module):
             print('=> Load Done')
         return model
 
-    def forward(self, x):
+    def forward(self, x):    
+        # print("*"*20,type(x))
         return self.model.forward(x)
 
     def predict(self, inputs):
