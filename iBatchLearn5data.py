@@ -100,8 +100,14 @@ def run(args):
 
 def cal_forget(acc_table):
     a = acc_table
-    forget = (max(a['1'].values())-a['1']['4']+max(a['2'].values())-a['2']['4']+max(a['3'].values())-a['3']['4'])/4
-    return forget
+    N = len(a)
+    total=0
+    lasttask=list(a.keys())[N-1]
+    for valtask in list(a.keys()):
+        temp=max(a[valtask].values())-a[valtask][lasttask]
+        total=total+temp
+    # print(temp)
+    return total/N
 
 def get_args(argv):
     # This function prepares the variables shared across demo.py
