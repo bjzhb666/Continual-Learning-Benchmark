@@ -122,7 +122,7 @@ def CORe50Gen():
 
     return train_datasets, val_datasets, train_task_output_space,val_task_output_space
 
-def datasets4Gen():
+def datasets4Gen(dataroot):
     normalize = transforms.Normalize(
             mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     train_transform=transforms.Compose([
@@ -138,15 +138,15 @@ def datasets4Gen():
                                  transforms.ToTensor(),
                                  normalize,
                              ])
-    train_data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/cubs_cropped/train',transform=train_transform)
-    train_data2 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/flowers/train',transform=train_transform)
-    train_data3 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/sketches/train',transform=train_transform)
-    train_data4 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/stanford_cars_cropped/train',transform=train_transform)
+    train_data1 = ImageFolder(root=dataroot+'cubs_cropped/train',transform=train_transform)
+    train_data2 =ImageFolder(root=dataroot+'flowers/train',transform=train_transform)
+    train_data3 =ImageFolder(root=dataroot+'sketches/train',transform=train_transform)
+    train_data4 =ImageFolder(root=dataroot+'stanford_cars_cropped/train',transform=train_transform)
     
-    val_data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/cubs_cropped/test',transform=val_transform)
-    val_data2 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/flowers/test',transform=val_transform)
-    val_data3 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/sketches/test',transform=val_transform)
-    val_data4 =ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/data/stanford_cars_cropped/test',transform=val_transform)
+    val_data1 = ImageFolder(root=dataroot+'cubs_cropped/test',transform=val_transform)
+    val_data2 =ImageFolder(root=dataroot+'flowers/test',transform=val_transform)
+    val_data3 =ImageFolder(root=dataroot+'sketches/test',transform=val_transform)
+    val_data4 =ImageFolder(root=dataroot+'stanford_cars_cropped/test',transform=val_transform)
 
     train_datasets = {}
     val_datasets = {}
@@ -170,7 +170,7 @@ def datasets4Gen():
 
     return train_datasets, val_datasets, train_task_output_space
 
-def officehomeGen(fac=0.7,seed=0):
+def officehomeGen(dataroot,fac=0.7,seed=0):
     train_datasets = {}
     val_datasets = {}
     train_task_output_space = {}
@@ -190,10 +190,10 @@ def officehomeGen(fac=0.7,seed=0):
                                   std=[0.229, 0.224, 0.225])])
     }
     
-    data1 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/office-home dataset/OfficeHomeDataset_10072016/Art')
-    data2 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/office-home dataset/OfficeHomeDataset_10072016/Clipart')
-    data3 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/office-home dataset/OfficeHomeDataset_10072016/Product')
-    data4 = ImageFolder(root='/home/nibolin/zhaohongbo/Continual-Learning-Benchmark/data/office-home dataset/OfficeHomeDataset_10072016/Real World')
+    data1 = ImageFolder(root=dataroot+'Art')
+    data2 = ImageFolder(root=dataroot+'Clipart')
+    data3 = ImageFolder(root=dataroot+'Product')
+    data4 = ImageFolder(root=dataroot+'Real World')
 
     train1_size=int(len(data1)*fac)
     val1_size=len(data1)-train1_size

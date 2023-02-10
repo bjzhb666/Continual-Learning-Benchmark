@@ -16,10 +16,10 @@ def run(args):
 
     # Prepare dataloaders
     if args.dataset=='fourdatasets':
-        train_dataset_splits, val_dataset_splits, task_output_space = datasets4Gen()  
+        train_dataset_splits, val_dataset_splits, task_output_space = datasets4Gen(args.mydataroot)  
 
     elif args.dataset=='officehome':
-        train_dataset_splits, val_dataset_splits, task_output_space = officehomeGen()
+        train_dataset_splits, val_dataset_splits, task_output_space = officehomeGen(args.mydataroot)
     
     else:  
         train_dataset, val_dataset = dataloaders.base.__dict__[args.dataset](args.dataroot, args.train_aug)
@@ -140,6 +140,7 @@ def get_args(argv):
     parser.add_argument('--repeat', type=int, default=1, help="Repeat the experiment N times")
     parser.add_argument('--incremental_class', dest='incremental_class', default=False, action='store_true',
                         help="The number of output node in the single-headed model increases along with new categories.")
+    parser.add_argument('--mydataroot',type=str,help="my data root of four dataset and officehome")
     args = parser.parse_args(argv)
     return args
 
