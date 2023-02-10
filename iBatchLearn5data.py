@@ -98,6 +98,11 @@ def run(args):
 
     return acc_table, task_names
 
+def cal_forget(acc_table):
+    a = acc_table
+    forget = (max(a['1'].values())-a['1']['4']+max(a['2'].values())-a['2']['4']+max(a['3'].values())-a['3']['4'])/4
+    return forget
+
 def get_args(argv):
     # This function prepares the variables shared across demo.py
     parser = argparse.ArgumentParser()
@@ -163,6 +168,10 @@ if __name__ == '__main__':
             acc_table, task_names = run(args)
             print(acc_table)
 
+            forget = cal_forget(acc_table)
+            wandb.log({
+                "forget":forget
+            })
             # Calculate average performance across tasks
             # Customize this part for a different performance metric
             avg_acc_history = [0] * len(task_names)
